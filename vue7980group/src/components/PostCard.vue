@@ -3,10 +3,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <h6 class="card-subtitle mb-2 text-muted">Posted by: {{ post.author }}</h6>
+                <span v-if="post.likesCount" class="likes-count">{{ post.likesCount }} Likes</span>
                 <div class="text-muted">
                     Posted on: {{ post.publishDate }}
                 </div>
-                <span v-if="post.likesCount" class="likes-count">{{ post.likesCount }} Likes</span>
             </div>
             <h5 class="card-title">{{ post.title }}</h5>
             <p class="card-text">{{ post.summary }}</p>
@@ -48,19 +48,42 @@ export default {
     },
     methods: {
         fetchPostData() {
-            // getPostById(this.id).then(data => {
-            //     this.post = { ...this.post, ...data };
-            // });
-            console.log(this.id)
+            // fetch(`/api/posts/${this.id}`)
+            //     .then(response => {
+            //         if (!response.ok) {
+            //             throw new Error('response not ok');
+            //         }
+            //         return response.json();
+            //     })
+            //     .then(data => {
+            //         this.post = data;
+            //     })
+            //     .catch(error => {
+            //         console.error('get posts failed:', error);
+            //     });
         },
         readMore() {
             console.log('Read More clicked');
         },
         likePost() {
+            // fetch(`/api/posts/like/${this.id}`, {
+            //     method: 'PUT',
+            // })
+            //     .then(response => {
+            //         if (!response.ok) {
+            //             throw new Error('response not ok');
+            //         }
+            //         return response.json();
+            //     })
+            //     .then(() => {
             this.post.liked = !this.post.liked;
             this.post.likeButtonText = this.post.liked ? 'Liked🥰' : 'Like👍';
             this.post.likesCount += this.post.liked ? 1 : -1;
-            console.log('Like button clicked', this.post.liked);
+            //     })
+            //     .catch(error => {
+            //         console.error('like failed:', error);
+            //     });
+            // console.log('Like button clicked', this.post.liked);
         },
     },
 };
