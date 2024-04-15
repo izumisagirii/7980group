@@ -41,6 +41,7 @@ export default {
                     if (!response.ok) {
                         throw new Error('fail to login!');
                     }
+                    localStorage.setItem('token', response.json().token);
                     return response.json();
                 })
                 .then(() => {
