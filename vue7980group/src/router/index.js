@@ -20,8 +20,17 @@ const router = createRouter({
     {
       path: '/browse',
       name: 'browse',
-      component: () => import('../views/BrowseView.vue')
-      // component: HomeView
+      component: () => import('../views/BrowseView.vue'),
+      children: [
+        {
+          path: 'music',
+          component: () => import('../views/BrowseView.vue')
+        },
+        {
+          path: 'sports',
+          component: () => import('../views/BrowseView.vue')
+        },
+      ]
     }
   ]
 })

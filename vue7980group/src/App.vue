@@ -6,7 +6,6 @@ import Navbar from './components/Navbar.vue';
 </script>
 
 
-
 <template>
   <div id="app">
     <Navbar id="app-navbar" />
