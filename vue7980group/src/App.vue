@@ -26,6 +26,7 @@ export default {
 
 <style>
 .router-view {
+  display: block;
   margin: 70px auto 20px;
   max-width: 1200px;
 }

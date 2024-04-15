@@ -12,7 +12,7 @@
             <p class="card-text">{{ post.summary }}</p>
 
             <div class="d-flex justify-content-between">
-                <a href="#" class="btn btn-primary" @click="readMore">Read More</a>
+                <a class="btn btn-primary" @click="readMore">Read More</a>
                 <button type="button" :class="['btn', post.liked ? 'btn-danger' : 'btn-secondary']" @click="likePost">
                     {{ post.likeButtonText }}
                 </button>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+// import { useRoute } from 'vue-router';
+// const route = useRoute();
 export default {
     name: 'PostCard',
     props: {
@@ -64,6 +66,7 @@ export default {
         },
         readMore() {
             console.log('Read More clicked');
+            this.$router.push({ path: `/post/${this.id}` });
         },
         likePost() {
             // fetch(`/api/posts/like/${this.id}`, {

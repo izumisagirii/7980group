@@ -32,7 +32,8 @@ import PostCard from './PostCard.vue';
 const props = defineProps({
     filter: String,
     pageSize: Number,
-    sortType: String
+    sortType: String,
+    searchText: String
 });
 
 // 帖子数据的响应式引用
@@ -127,15 +128,16 @@ const changePage = (newPage) => {
 const loadPosts = async () => {
     try {
         // 使用fetch发送GET请求到后端API
-        // const response = await fetch('/api/posts?' + new URLSearchParams({
-        //     filter: props.filter,
-        //     sortType: props.sortType,
-        // }));
-        // if (!response.ok) {
-        //     throw new Error('Network response was not ok');
-        // }
-        // const data = await response.json();
-        // posts.value = data;
+        const response = await fetch('/api/posts?' + new URLSearchParams({
+            filter: props.filter,
+            sortType: props.sortType,
+            searchText: props.searchText,
+        }));
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        posts.value = data;
     } catch (error) {
         console.error('Failed to load posts:', error);
     }

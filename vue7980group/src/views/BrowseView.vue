@@ -1,17 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import PostCard from '../components/PostCard.vue';
+// import PostCard from '../components/PostCard.vue';
 import PostCardView from '../components/PostCardView.vue';
 
 import { useRoute } from 'vue-router';
 
-// 定义筛选类型、每页显示条数和排序方式的响应式变量
 const filter = ref('all');
 const pageSize = ref(10);
 const sortType = ref('time');
+const searchText = ref('');
 
 const route = useRoute();
 onMounted(() => {
+  if (route.params.searchText) {
+    searchText.value = route.params.searchText;
+  }
   if (route.params.filterType) {
     filter.value = route.params.filterType;
   }
@@ -31,18 +34,11 @@ const updateSortType = (newSort) => {
   // updateView();
 };
 
-// const updateView = () => {
-
-//   // 根据当前的filter, pageSize, 和 sortType来获取数据
-//   console.log('Loading posts with', filter.value, pageSize.value, sortType.value);
-//   //更新postcardview
-// };
 </script>
 
 <template>
 
   <main class="container">
-    <!-- 使用Bootstrap的行和列来创建响应式布局 -->
     <div class="d-flex justify-content-start gap-3">
       <!-- 筛选类型下拉菜单 -->
       <div class="dropdown">
@@ -51,23 +47,22 @@ const updateSortType = (newSort) => {
           Categori {{ filter }}
         </button>
         <ul class="dropdown-menu" aria-labelledby="filterMenuButton">
-          <li><a class="dropdown-item" href="#" @click="updateFilter('all')">All</a></li>
-          <li><a class="dropdown-item" href="#" @click="updateFilter('sports')">Sports</a></li>
-          <li><a class="dropdown-item" href="#" @click="updateFilter('music')">Music</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('all')">All</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('sports')">Sports</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('music')">Music</a></li>
           <!-- more -->
         </ul>
 
       </div>
-      <!-- 每页显示条数下拉菜单 -->
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="pageSizeMenuButton"
           data-bs-toggle="dropdown" aria-expanded="false">
           {{ pageSize }} per page
         </button>
         <ul class="dropdown-menu" aria-labelledby="pageSizeMenuButton">
-          <li><a class="dropdown-item" href="#" @click="updatePageSize(5)">5</a></li>
-          <li><a class="dropdown-item" href="#" @click="updatePageSize(10)">10</a></li>
-          <li><a class="dropdown-item" href="#" @click="updatePageSize(20)">20</a></li>
+          <li><a class="dropdown-item" @click="updatePageSize(5)">5</a></li>
+          <li><a class="dropdown-item" @click="updatePageSize(10)">10</a></li>
+          <li><a class="dropdown-item" @click="updatePageSize(20)">20</a></li>
           <!-- more -->
         </ul>
 
@@ -79,8 +74,8 @@ const updateSortType = (newSort) => {
           Sort by {{ sortType }}
         </button>
         <ul class="dropdown-menu" aria-labelledby="sortTypeMenuButton">
-          <li><a class="dropdown-item" href="#" @click="updateSortType('likes')">Likes</a></li>
-          <li><a class="dropdown-item" href="#" @click="updateSortType('time')">Time</a></li>
+          <li><a class="dropdown-item" @click="updateSortType('likes')">Likes</a></li>
+          <li><a class="dropdown-item" @click="updateSortType('time')">Time</a></li>
           <!-- more -->
         </ul>
       </div>
@@ -90,6 +85,6 @@ const updateSortType = (newSort) => {
     <!-- <PostCard v-for="post in posts" :key="post.id" :type="filter" /> -->
     <!-- <PostCard /> -->
     <!-- <PostCard :id=114514 /> -->
-    <PostCardView :filter="filter" :pageSize="pageSize" :sortType="sortType" />
+    <PostCardView :filter="filter" :pageSize="pageSize" :sortType="sortType" :searchText="searchText" />
   </main>
 </template>

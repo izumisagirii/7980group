@@ -48,6 +48,7 @@ export default {
         onSearch() {
             // Handle the search logic here
             console.log('Searching for:', this.searchQuery);
+            this.$router.push('/search/' + this.searchQuery)
         }
     }
 };
