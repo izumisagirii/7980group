@@ -18,21 +18,13 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/browse',
+      path: '/browse/:filterType?',
       name: 'browse',
       component: () => import('../views/BrowseView.vue'),
-      children: [
-        {
-          path: 'music',
-          component: () => import('../views/BrowseView.vue')
-        },
-        {
-          path: 'sports',
-          component: () => import('../views/BrowseView.vue')
-        },
-      ]
+      props: true
     }
   ]
 })
+
 
 export default router
