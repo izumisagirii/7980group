@@ -46,10 +46,16 @@ export default {
     methods: {
         async submitPost() {
             try {
+                const token = localStorage.getItem('token');
+                const senderName = localStorage.getItem('name');
+                this.post = this.post || {};
+                this.post.senderName = senderName;
+
                 const response = await fetch('/api/publish', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify(this.post)
                 });
@@ -61,6 +67,7 @@ export default {
                 alert('Error Publish');
             }
         }
+
     }
 };
 </script>

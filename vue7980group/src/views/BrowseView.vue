@@ -4,34 +4,39 @@ import { ref, onMounted } from 'vue';
 import PostCardView from '../components/PostCardView.vue';
 
 import { useRoute } from 'vue-router';
+// import { ref } from 'vue';
 
+const postCardViewRef = ref(null);
 const filter = ref('all');
 const pageSize = ref(10);
 const sortType = ref('time');
 const searchText = ref('');
 
 const route = useRoute();
+
 onMounted(() => {
   if (route.params.searchText) {
     searchText.value = route.params.searchText;
+    return;
   }
   if (route.params.filterType) {
     filter.value = route.params.filterType;
+    return;
   }
+  postCardViewRef.value.loadPosts()
 });
 
-
+// watch([filter, pageSize, sortType, searchText], () => {
+//   this.$refs.postCardView.loadPosts();
+// }, { immediate: true });
 const updateFilter = (newType) => {
   filter.value = newType;
-  // updateView();
 };
 const updatePageSize = (newSize) => {
   pageSize.value = newSize;
-  // updateView();
 };
 const updateSortType = (newSort) => {
   sortType.value = newSort;
-  // updateView();
 };
 
 </script>
@@ -85,6 +90,8 @@ const updateSortType = (newSort) => {
     <!-- <PostCard v-for="post in posts" :key="post.id" :type="filter" /> -->
     <!-- <PostCard /> -->
     <!-- <PostCard :id=114514 /> -->
-    <PostCardView :filter="filter" :pageSize="pageSize" :sortType="sortType" :searchText="searchText" />
+    <PostCardView ref="postCardViewRef" :filter="filter" :pageSize="pageSize" :sortType="sortType"
+      :searchText="searchText" />
+
   </main>
 </template>
