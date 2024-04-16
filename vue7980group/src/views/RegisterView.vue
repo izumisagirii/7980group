@@ -27,7 +27,6 @@ export default {
         return {
             user: {
                 username: '',
-                // email: '',
                 password: ''
             }
         };
@@ -43,12 +42,13 @@ export default {
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('fail to reg!');
+                        throw new Error('Already registered!');
                     }
                     return response.json();
                 })
-                .then(() => {
-                    this.$router.push('/');
+                .then(data => {
+                    // localStorage.setItem('token', data.token)
+                    this.$router.push('/login');
                 })
                 .catch(error => {
                     this.resetForm();

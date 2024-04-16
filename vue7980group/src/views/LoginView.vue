@@ -39,12 +39,13 @@ export default {
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('fail to login!');
+                        throw new Error('failed to login!');
                     }
-                    localStorage.setItem('token', response.json().token);
                     return response.json();
                 })
-                .then(() => {
+                .then(data => {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('name', this.user.username);
                     this.$router.push('/');
                 })
                 .catch(error => {
@@ -54,12 +55,12 @@ export default {
         },
         resetForm() {
             this.user.username = '';
-            // this.user.email = '';
             this.user.password = '';
         }
     }
 };
 </script>
+
 
 <style>
 .reg {

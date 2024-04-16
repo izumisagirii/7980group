@@ -1,26 +1,40 @@
 var createError = require('http-errors');
-var express = require('express');
+// var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const cors = require('cors');
+const express = require('express');
+// const jwt = require('jsonwebtoken');
+const { expressjwt: jwt } = require('express-jwt');
 
-var app = express();
 
-const { generateToken, isRay } = require('./utils/auth');
-var jwt = require('jsonwebtoken');
-var passport = require('passport');
-var BearerStrategy = require('passport-http-bearer').Strategy;
-passport.use(new BearerStrategy(
-  function (token, done) {
-    jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
-      if (err) { return done(err); }
-      return done(null, decoded, { scope: "all" });
-    });
-  }
-));
+const app = express();
+
+app.use(express.json());
+
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
+
+
+// app.listen(3000, () => {
+//   console.log('Server is running on port 3000');
+// });
+// app.use(jwt({
+//   secret: 'secret',
+//   algorithms: ['HS256']
+// }).unless({
+//   path: ['/api/login', '/api/register']
+// }));
+
+// 连接数据库
+// const db = await connectToDB();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,8 +47,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-app.use('/users', passport.authenticate('bearer', { session: false }), usersRouter);
+app.use('/users', usersRouter);
+// app.use('/users', passport.authenticate('bearer', { session: false }), usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
