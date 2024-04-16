@@ -52,12 +52,10 @@ export default {
         this.checkLoginStatus();
     },
     watch: {
-        // 监听$route对象，当路由变化时调用checkLoginStatus方法
         '$route': 'checkLoginStatus'
     },
     methods: {
         onSearch() {
-            // Handle the search logic here
             console.log('Searching for:', this.searchQuery);
             this.$router.push('/search/' + this.searchQuery)
         },

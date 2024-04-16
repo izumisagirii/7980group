@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 // import PostCard from '../components/PostCard.vue';
 import PostCardView from '../components/PostCardView.vue';
 
@@ -13,7 +13,12 @@ const sortType = ref('time');
 const searchText = ref('');
 
 const route = useRoute();
-
+watch(() => route.params, (newParams) => {
+  if (route.params.searchText != undefined) {
+    searchText.value = route.params.searchText;
+    return;
+  }
+});
 onMounted(() => {
   if (route.params.searchText) {
     searchText.value = route.params.searchText;
@@ -55,6 +60,10 @@ const updateSortType = (newSort) => {
           <li><a class="dropdown-item" @click="updateFilter('all')">All</a></li>
           <li><a class="dropdown-item" @click="updateFilter('sports')">Sports</a></li>
           <li><a class="dropdown-item" @click="updateFilter('music')">Music</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('science')">Science</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('literature')">Literature</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('food')">Food</a></li>
+          <li><a class="dropdown-item" @click="updateFilter('travel')">Travel</a></li>
           <!-- more -->
         </ul>
 

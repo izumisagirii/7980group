@@ -13,8 +13,12 @@
                         <label for="topic">Topic</label>
                         <select class="form-control" id="topic" v-model="post.topic" required>
                             <option disabled value="">Pls choose topic</option>
-                            <option value="music">music</option>
-                            <option value="sports">sports</option>
+                            <option value="science">Science & Tech</option>
+                            <option value="sports">Sports & Vitality</option>
+                            <option value="literature">Literature & Arts</option>
+                            <option value="music">Music & Harmony</option>
+                            <option value="food">Food & Cuisine</option>
+                            <option value="travel">Travel & Adventure</option>
                         </select>
                     </div>
                     <div class="form-group">

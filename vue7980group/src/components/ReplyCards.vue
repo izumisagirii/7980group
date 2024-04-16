@@ -3,6 +3,7 @@
         <div class="card-body">
             <h5 class="card-title">{{ item.author }}</h5>
             <p class="card-text">{{ item.comment }}</p>
+            <p class="card-text"><small class="text-muted">Posted on {{ item.publishDate }}</small></p>
         </div>
     </div>
 </template>
@@ -18,19 +19,7 @@ export default {
     },
     data() {
         return {
-            post: [{
-                author: 'ADMIN',
-                comment: 'Test comment',
-            }, {
-                author: 'ADMIN',
-                comment: 'Test comment',
-            }, {
-                author: 'ADMIN',
-                comment: 'Test comment',
-            }, {
-                author: 'ADMIN',
-                comment: 'Test comment',
-            },]
+            post: []
         };
     },
     created() {
@@ -38,19 +27,30 @@ export default {
     },
     methods: {
         fetchCommentData() {
-            // fetch(`/api/comments/${this.id}`)
-            //     .then(response => {
-            //         if (!response.ok) {
-            //             throw new Error('Network response was not ok ' + response.statusText);
-            //         }
-            //         return response.json();
-            //     })
-            //     .then(data => {
-            //         this.post = data;
-            //     })
-            //     .catch(error => {
-            //         console.error('Fetching posts failed:', error);
-            //     });
+            fetch(`/api/comments/${this.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.post = data.map(comment => ({
+                        author: comment.username,
+                        comment: comment.comment,
+                        publishDate: new Date(comment.commentedAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            timeZoneName: 'short'
+                        }),
+                    }));
+                })
+                .catch(error => {
+                    console.error('Failed to fetch comments:', error);
+                });
         },
     },
 };

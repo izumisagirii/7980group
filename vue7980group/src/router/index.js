@@ -47,6 +47,12 @@ const router = createRouter({
       component: () => import('../views/PostView.vue'),
       props: true
     },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue'),
+      props: true
+    },
   ]
 })
 

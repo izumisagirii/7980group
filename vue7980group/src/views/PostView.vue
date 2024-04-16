@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        <ReplyCard :id="postId" :username="'author'" />
+        <ReplyCard :id="postId" />
         <ReplyCards :id="postId" />
     </main>
 </template>
@@ -30,77 +30,103 @@ import { useRoute } from 'vue-router';
 import ReplyCard from '../components/ReplyCard.vue';
 import ReplyCards from '../components/ReplyCards.vue';
 
-const postId = ref('0');
+// const postId = ref('0');
 
-const route = useRoute();
-onMounted(() => {
-    if (route.params.postId) {
-        postId.value = route.params.postId;
-    }
-});
+// const route = useRoute();
+// onMounted(() => {
+//     if (route.params.postId) {
+//         postId.value = route.params.postId;
+//     }
+// });
 
 
 </script>
 <script>
 export default {
     name: 'PostView',
-    // props: {
-    //     id: {
-    //         type: String,
-    //         required: true,
-    //     },
-    // },
     data() {
         return {
+            postId: '0',
             post: {
-                author: 'ADMIN',
-                title: 'Post Title',
-                summary: 'This is a short summary of the post... kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk',
+                author: '',
+                title: '',
+                summary: '',
                 liked: false,
-                likeButtonText: 'Like👍',
+                likeButtonText: '',
                 likesCount: 0,
-                publishDate: '1970/1/1',
+                publishDate: '',
             },
         };
     },
     created() {
+        const route = useRoute();
+        this.postId = route.params.postId;
         this.fetchPostData();
     },
     methods: {
         fetchPostData() {
-            // fetch(`/api/posts/${postId}`)
-            // .then(response => {
-            //     if (!response.ok) {
-            //         throw new Error('response not ok');
-            //     }
-            //     return response.json();
-            // })
-            // .then(data => {
-            //     this.post = data;
-            // })
-            // .catch(error => {
-            //     console.error('get posts failed:', error);
-            // });
+            const senderName = localStorage.getItem('name');
+            const token = localStorage.getItem('token');
+            fetch(`/api/post/${this.postId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.post = {
+                        author: data.senderName,
+                        title: data.title,
+                        summary: data.content,
+                        // summary: data.content.slice(0, 50),
+                        liked: data.likedBy.includes(senderName),
+                        likeButtonText: data.likedBy.includes(senderName) ? 'Liked🥰' : 'Like👍',
+                        likesCount: data.likes,
+                        publishDate: new Date(data.postTime).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            timeZoneName: 'short'
+                        }),
+                    };
+                })
+                .catch(error => {
+                    console.error('Fetching post data failed:', error);
+                });
         },
         likePost() {
-            // fetch(`/api/posts/like/${this.id}`, {
-            //     method: 'PUT',
-            // })
-            //     .then(response => {
-            //         if (!response.ok) {
-            //             throw new Error('response not ok');
-            //         }
-            //         return response.json();
-            //     })
-            //     .then(() => {
-            this.post.liked = !this.post.liked;
-            this.post.likeButtonText = this.post.liked ? 'Liked🥰' : 'Like👍';
-            this.post.likesCount += this.post.liked ? 1 : -1;
-            //     })
-            //     .catch(error => {
-            //         console.error('like failed:', error);
-            //     });
-            // console.log('Like button clicked', this.post.liked);
+            const senderName = localStorage.getItem('name');
+            const token = localStorage.getItem('token');
+            fetch(`/api/post/like/${this.postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ senderName }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not ok');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    this.post.liked = !this.post.liked;
+                    this.post.likeButtonText = this.post.liked ? 'Liked🥰' : 'Like👍';
+                    this.post.likesCount += this.post.liked ? 1 : -1;
+                })
+                .catch(error => {
+                    console.error('Liking post failed:', error);
+                });
         },
     },
 };

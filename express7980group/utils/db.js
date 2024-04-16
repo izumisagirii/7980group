@@ -1,6 +1,6 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
-
+process.env.MONGODB_URI = 'add your uri';
 
 if (!process.env.MONGODB_URI) {
     // throw new Error('Please define the MONGODB_URI environment variable inside .env.local');

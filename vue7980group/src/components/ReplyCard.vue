@@ -1,7 +1,6 @@
 <template>
     <div class="card mb-3">
         <div class="card-body">
-            <!-- 评论区域 -->
             <div class="comments">
                 <h5>Comment</h5>
                 <div class="mb-3">
@@ -22,10 +21,6 @@ export default {
             type: String,
             required: true,
         },
-        username: {
-            type: String,
-            required: true,
-        }
     },
     data() {
         return {
@@ -34,9 +29,10 @@ export default {
     },
     methods: {
         replyPost() {
+            const token = localStorage.getItem('token');
             const requestBody = {
                 id: this.id,
-                username: this.username,
+                username: localStorage.getItem('name'),
                 comment: this.commentContent,
             };
 
@@ -44,12 +40,14 @@ export default {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(requestBody),
             })
                 .then(response => response.json())
                 .then(data => {
                     console.log('comment success:', data);
+                    alert('comment success');
                     this.commentContent = '';
                 })
                 .catch((error) => {

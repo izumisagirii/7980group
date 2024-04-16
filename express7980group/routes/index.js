@@ -13,27 +13,62 @@ router.use(jwt({
   secret: 'secret',
   algorithms: ['HS256']
 }).unless({
-  path: ['/api/login', '/api/register']
+  path: ['/login', '/register']
 }));
 
 
-function checkRole(role) {
-  return function (req, res, next) {
-    if (req.user.role === role) {
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+
+    jwtoken.verify(token, 'secret', (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      if (user.role !== 'admin') {
+        return res.sendStatus(401);
+      }
+
+      req.user = user;
       next();
-    } else {
-      res.status(403).send('Your current permission group is not supported!');
-    }
-  };
-}
-
-// /* GET home page. */
-// router.get('/', function (req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
+    });
+  } else {
+    res.sendStatus(401);
+  }
+};
 
 
-router.post('/api/login', async (req, res) => {
+router.delete('/posts/:id', authenticateJWT, async (req, res) => {
+  const db = await connectToDB();
+  const postId = req.params.id;
+  const post = await db.collection('posts').findOne({ "_id": new ObjectId(postId) });
+
+  if (!post) {
+    return res.status(404).send('not find post');
+  }
+
+  await db.collection('posts').deleteOne({ "_id": postId });
+  res.send('success');
+});
+
+
+router.delete('/users/:username', authenticateJWT, async (req, res) => {
+  const db = await connectToDB();
+  const username = req.params.username;
+  const user = await db.collection('users').findOne({ "username": username });
+
+  if (!user) {
+    return res.status(404).send('not find user');
+  }
+
+  await db.collection('users').deleteOne({ "username": username });
+  res.send('success');
+});
+
+
+router.post('/login', async (req, res) => {
   const db = await connectToDB();
 
   const { username, password } = req.body;
@@ -49,7 +84,7 @@ router.post('/api/login', async (req, res) => {
 
 
 
-router.get('/api/posts', async (req, res) => {
+router.get('/posts', async (req, res) => {
   try {
     const db = await connectToDB();
     const { filter, sortType, searchText } = req.query;
@@ -81,7 +116,110 @@ router.get('/api/posts', async (req, res) => {
   }
 });
 
-router.post('/api/publish', async (req, res) => {
+router.get('/comments/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const postId = req.params.id;
+
+    const post = await db.collection('posts').findOne({ "_id": new ObjectId(postId) });
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+    res.status(200).send(post.comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).send({ message: 'Error processing your request' });
+  }
+});
+
+router.post('/comment', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { comment, id, username } = req.body;
+
+    if (!comment) {
+      return res.status(400).send({ message: 'Comment content is required.' });
+    }
+
+    const updateResult = await db.collection('posts').updateOne(
+      { "_id": new ObjectId(id) },
+      {
+        $push: {
+          comments: {
+            username,
+            comment,
+            commentedAt: new Date()
+          }
+        }
+      }
+    );
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).send({ message: 'Post not found.' });
+    }
+
+    res.status(200).send({ message: 'Comment added successfully.' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).send({ message: 'Error processing your request.' });
+  }
+});
+
+
+router.put('/post/like/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const postId = req.params.id;
+    const senderName = req.body.senderName;
+    const post = await db.collection('posts').findOne({ "_id": new ObjectId(postId) });
+
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+
+    const isLiked = post.likedBy.includes(senderName);
+    if (isLiked) {
+      await db.collection('posts').updateOne(
+        { "_id": new ObjectId(postId) },
+        { $inc: { likes: -1 }, $pull: { likedBy: senderName } }
+      );
+    } else {
+      await db.collection('posts').updateOne(
+        { "_id": new ObjectId(postId) },
+        { $inc: { likes: 1 }, $push: { likedBy: senderName } }
+      );
+    }
+
+    const updatedPost = await db.collection('posts').findOne({ "_id": new ObjectId(postId) });
+    res.status(200).send(updatedPost);
+
+  } catch (error) {
+    console.error('Error liking/unliking post:', error);
+    res.status(500).send({ message: 'Error processing your request' });
+  }
+});
+
+router.get('/post/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const postId = req.params.id;
+
+    const post = await db.collection('posts').findOne({ _id: new ObjectId(postId) });
+    // console.log(post);
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+
+    res.status(200).json({
+      ...post,
+    });
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    res.status(500).send({ message: 'Error fetching post' });
+  }
+});
+
+router.post('/publish', async (req, res) => {
   try {
     const db = await connectToDB();
     const { senderName, title, content, topic } = req.body;
@@ -109,7 +247,7 @@ router.post('/api/publish', async (req, res) => {
   }
 });
 
-router.post('/api/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   const db = await connectToDB();
   const { username, password } = req.body;
 
