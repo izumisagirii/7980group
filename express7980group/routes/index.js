@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await db.collection('users').findOne({ username });
   if (user && user.password === password) {
-    const token = jwtoken.sign({ userId: user._id, role: user.role }, 'secret', { expiresIn: '1h' });
+    const token = jwtoken.sign({ userId: user._id, role: user.role }, 'secret', { expiresIn: '36h' });
     res.send({ token });
   } else {
     res.status(401).send('auth fail');
@@ -218,6 +218,33 @@ router.get('/post/:id', async (req, res) => {
     res.status(500).send({ message: 'Error fetching post' });
   }
 });
+
+router.put('/update/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const postId = req.params.id;
+    const updateData = req.body;
+
+    const updateResult = await db.collection('posts').updateOne(
+      { _id: new ObjectId(postId) },
+      { $set: updateData }
+    );
+
+    if (!updateResult.matchedCount) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+
+    if (!updateResult.modifiedCount) {
+      return res.status(400).send({ message: 'No changes made to the post' });
+    }
+
+    res.status(200).send({ message: 'Post updated successfully' });
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).send({ message: 'Error updating post' });
+  }
+});
+
 
 router.post('/publish', async (req, res) => {
   try {

@@ -12,7 +12,10 @@
             <p class="card-text">{{ post.summary }}</p>
 
             <div class="d-flex justify-content-between">
-                <a class="btn btn-primary" @click="readMore">Read More</a>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary" @click="readMore">Read More</button>
+                    <button v-if="ifEdit" type="button" class="btn btn-info" @click="edit">Edit</button>
+                </div>
                 <button type="button" :class="['btn', post.liked ? 'btn-danger' : 'btn-secondary']" @click="likePost">
                     {{ post.likeButtonText }}
                 </button>
@@ -42,6 +45,7 @@ export default {
                 likesCount: 0,
                 publishDate: '',
             },
+            ifEdit: false,
         };
     },
     created() {
@@ -81,6 +85,9 @@ export default {
                             timeZoneName: 'short'
                         }),
                     };
+                    if (senderName === data.senderName) {
+                        this.ifEdit = true;
+                    }
                 })
                 .catch(error => {
                     console.error('Fetching post data failed:', error);
@@ -88,6 +95,9 @@ export default {
         },
         readMore() {
             this.$router.push({ path: `/post/${this.id}` });
+        },
+        edit() {
+            this.$router.push({ path: `/edit/${this.id}` });
         },
         likePost() {
             const senderName = localStorage.getItem('name');
