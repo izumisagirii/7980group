@@ -69,7 +69,7 @@ export default {
             const token = localStorage.getItem('token_my');
             fetch(`/api/post/${this.postId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'authorization_my': `Bearer ${token}`
                 }
             })
                 .then(response => {
@@ -109,7 +109,7 @@ export default {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'authorization_my': `Bearer ${token}`
                 },
                 body: JSON.stringify({ senderName }),
             })

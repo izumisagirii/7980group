@@ -59,7 +59,7 @@ export default {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+                        'authorization_my': `Bearer ${token}`,
                     },
                     body: JSON.stringify(this.post)
                 });

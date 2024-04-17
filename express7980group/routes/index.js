@@ -7,7 +7,7 @@ const { connectToDB, ObjectId } = require('../utils/db');
 const { expressjwt: jwt } = require('express-jwt');
 
 // const ObjectId = require('mongodb').ObjectId;
-process.env.TOKEN_SECRET = 'secret';
+// process.env.TOKEN_SECRET = 'secret';
 
 // passport.use(new BearerStrategy(
 //   function (token, done) {
@@ -19,15 +19,15 @@ process.env.TOKEN_SECRET = 'secret';
 // ));
 
 
-
-router.use(jwt({
-  secret: process.env.TOKEN_SECRET,
-  algorithms: ['HS256']
-}).unless({
-  path: ['/login', '/register']
-}));
+//deprecated
+// router.use(jwt({
+//   secret: process.env.TOKEN_SECRET,
+//   algorithms: ['HS256']
+// }).unless({
+//   path: ['/login', '/register']
+// }));
 const authenticateJWTadmin = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization_my;
   if (authHeader) {
     const token = authHeader.split(' ')[1];
     console.log(token);
@@ -49,16 +49,16 @@ const authenticateJWTadmin = (req, res, next) => {
 };
 
 const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization_my;
   if (authHeader) {
     const token = authHeader.split(' ')[1];
     console.log(token);
-    jwtoken.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    jwtoken.verify(token, process.env.TOKEN_SECRET, (err) => {
       if (err) {
+        console.log(err)
+        console.log(process.env.TOKEN_SECRET)
         return res.sendStatus(403);
       }
-
-      req.user = user;
       next();
     });
   } else {
@@ -111,7 +111,7 @@ router.post('/login', async (req, res) => {
 
 
 
-router.get('/posts', async (req, res) => {
+router.get('/posts', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const { filter, sortType, searchText } = req.query;

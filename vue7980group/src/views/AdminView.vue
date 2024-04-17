@@ -30,7 +30,7 @@ export default {
 
             fetch(`/api/posts/${this.postId}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'authorization_my': `Bearer ${token}` }
             })
                 .then(response => {
                     if (!response.ok) {
@@ -51,7 +51,7 @@ export default {
 
             fetch(`/api/users/${this.username}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'authorization_my': `Bearer ${token}` }
             })
                 .then(response => {
                     if (!response.ok) {

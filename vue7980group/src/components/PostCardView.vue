@@ -76,7 +76,7 @@ const loadPosts = async () => {
             searchText: props.searchText,
         }), {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'authorization_my': `Bearer ${token}`
             }
         });
         if (!response.ok) {
