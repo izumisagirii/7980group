@@ -58,7 +58,7 @@ export default {
     methods: {
         fetchPostData() {
             const senderName = localStorage.getItem('name');
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             fetch(`/api/post/${this.postId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -83,7 +83,7 @@ export default {
         },
         async submitPost() {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token_my');
                 const senderName = localStorage.getItem('name');
                 this.post = this.post || {};
                 this.post.senderName = senderName;

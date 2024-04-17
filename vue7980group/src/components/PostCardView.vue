@@ -69,7 +69,7 @@ const changePage = (newPage) => {
 
 const loadPosts = async () => {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token_my');
         const response = await fetch('/api/posts?' + new URLSearchParams({
             filter: props.filter,
             sortType: props.sortType,

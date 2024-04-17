@@ -29,7 +29,7 @@ export default {
     },
     methods: {
         replyPost() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             const requestBody = {
                 id: this.id,
                 username: localStorage.getItem('name'),

@@ -1,28 +1,37 @@
 var express = require('express');
 const jwtoken = require('jsonwebtoken');
+// var passport = require('passport');
+// var BearerStrategy = require('passport-http-bearer').Strategy;
 var router = express.Router();
 const { connectToDB, ObjectId } = require('../utils/db');
 const { expressjwt: jwt } = require('express-jwt');
 
 // const ObjectId = require('mongodb').ObjectId;
+process.env.TOKEN_SECRET = 'secret';
 
+// passport.use(new BearerStrategy(
+//   function (token, done) {
+//     jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
+//       if (err) { return done(err); }
+//       return done(null, decoded, { scope: "all" });
+//     });
+//   }
+// ));
 
 
 
 router.use(jwt({
-  secret: 'secret',
+  secret: process.env.TOKEN_SECRET,
   algorithms: ['HS256']
 }).unless({
   path: ['/login', '/register']
 }));
-
-
-const authenticateJWT = (req, res, next) => {
+const authenticateJWTadmin = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(' ')[1];
-
-    jwtoken.verify(token, 'secret', (err, user) => {
+    console.log(token);
+    jwtoken.verify(token, process.env.TOKEN_SECRET, (err, user) => {
       if (err) {
         return res.sendStatus(403);
       }
@@ -39,8 +48,26 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    console.log(token);
+    jwtoken.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
 
-router.delete('/posts/:id', authenticateJWT, async (req, res) => {
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
+};
+
+
+router.delete('/posts/:id', authenticateJWTadmin, async (req, res) => {
   const db = await connectToDB();
   const postId = req.params.id;
   const post = await db.collection('posts').findOne({ "_id": new ObjectId(postId) });
@@ -54,7 +81,7 @@ router.delete('/posts/:id', authenticateJWT, async (req, res) => {
 });
 
 
-router.delete('/users/:username', authenticateJWT, async (req, res) => {
+router.delete('/users/:username', authenticateJWTadmin, async (req, res) => {
   const db = await connectToDB();
   const username = req.params.username;
   const user = await db.collection('users').findOne({ "username": username });
@@ -74,7 +101,7 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await db.collection('users').findOne({ username });
   if (user && user.password === password) {
-    const token = jwtoken.sign({ userId: user._id, role: user.role }, 'secret', { expiresIn: '36h' });
+    const token = jwtoken.sign({ userId: user._id, role: user.role }, process.env.TOKEN_SECRET, { expiresIn: '36h' });
     res.send({ token });
   } else {
     res.status(401).send('auth fail');

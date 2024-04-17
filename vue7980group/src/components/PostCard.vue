@@ -54,7 +54,7 @@ export default {
     methods: {
         fetchPostData() {
             const senderName = localStorage.getItem('name');
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             fetch(`/api/post/${this.id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -101,7 +101,7 @@ export default {
         },
         likePost() {
             const senderName = localStorage.getItem('name');
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             fetch(`/api/post/like/${this.id}`, {
                 method: 'PUT',
                 headers: {

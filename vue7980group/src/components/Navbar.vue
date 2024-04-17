@@ -69,10 +69,10 @@ export default {
             this.isLoggedIn = this.checkLoggedIn();
         },
         checkLoggedIn() {
-            return localStorage.getItem('token') ? true : false;
+            return localStorage.getItem('token_my') ? true : false;
         },
         handleLogout() {
-            localStorage.removeItem('token');
+            localStorage.removeItem('token_my');
             localStorage.removeItem('name');
             console.log('Logged out successfully');
         },

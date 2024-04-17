@@ -44,7 +44,7 @@ export default {
                     return response.json();
                 })
                 .then(data => {
-                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('token_my', data.token);
                     localStorage.setItem('name', this.user.username);
                     this.$router.push('/');
                 })

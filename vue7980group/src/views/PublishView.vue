@@ -50,7 +50,7 @@ export default {
     methods: {
         async submitPost() {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token_my');
                 const senderName = localStorage.getItem('name');
                 this.post = this.post || {};
                 this.post.senderName = senderName;

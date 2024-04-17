@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         deletePost() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             if (!token) {
                 alert('Unauth');
                 return;
@@ -43,7 +43,7 @@ export default {
                 });
         },
         deleteUser() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token_my');
             if (!token) {
                 alert('Unauth');
                 return;

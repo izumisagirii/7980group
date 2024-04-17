@@ -29,7 +29,7 @@ export default {
         fetchCommentData() {
             fetch(`/api/comments/${this.id}`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token_my')}`,
                 },
             })
                 .then(response => response.json())
