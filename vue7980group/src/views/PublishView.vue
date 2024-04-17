@@ -1,3 +1,6 @@
+<script setup>
+import CPTco from '../components/GPTco.vue';
+</script>
 <template>
     <section class="container">
         <div class="container mt-5">
@@ -31,12 +34,13 @@
                 </form>
             </div>
             <!-- </div> -->
-
+            <CPTco />
         </div>
     </section>
 </template>
 
 <script>
+// import GPTco from '../components/GPTco.vue';
 export default {
     data() {
         return {

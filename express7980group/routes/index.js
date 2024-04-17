@@ -143,7 +143,7 @@ router.get('/posts', authenticateJWT, async (req, res) => {
   }
 });
 
-router.get('/comments/:id', async (req, res) => {
+router.get('/comments/:id', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const postId = req.params.id;
@@ -159,7 +159,7 @@ router.get('/comments/:id', async (req, res) => {
   }
 });
 
-router.post('/comment', async (req, res) => {
+router.post('/comment', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const { comment, id, username } = req.body;
@@ -193,7 +193,7 @@ router.post('/comment', async (req, res) => {
 });
 
 
-router.put('/post/like/:id', async (req, res) => {
+router.put('/post/like/:id', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const postId = req.params.id;
@@ -226,7 +226,7 @@ router.put('/post/like/:id', async (req, res) => {
   }
 });
 
-router.get('/post/:id', async (req, res) => {
+router.get('/post/:id', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const postId = req.params.id;
@@ -246,7 +246,7 @@ router.get('/post/:id', async (req, res) => {
   }
 });
 
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const postId = req.params.id;
@@ -273,7 +273,7 @@ router.put('/update/:id', async (req, res) => {
 });
 
 
-router.post('/publish', async (req, res) => {
+router.post('/publish', authenticateJWT, async (req, res) => {
   try {
     const db = await connectToDB();
     const { senderName, title, content, topic } = req.body;
@@ -324,6 +324,32 @@ router.post('/register', async (req, res) => {
   res.status(201).send({ token });
 });
 
+router.post('/chat', authenticateJWT, async (req, res) => {
+  const conversation = [{ "role": "user", "content": req.body.message }];
+  const chatGPTUrl = `https://chatgpt.hkbu.edu.hk/general/rest/deployments/gpt-35-turbo/chat/completions/?api-version=2024-02-15-preview`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'api-key': 'ad412e26-67b2-4f7b-87f7-c55389f84ccd'
+  };
+  const payload = { 'messages': conversation };
+
+  try {
+    const chatGPTResponse = await fetch(chatGPTUrl, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!chatGPTResponse.ok) {
+      throw new Error(`HTTP error! status: ${chatGPTResponse.status}`);
+    }
+
+    const data = await chatGPTResponse.json();
+    res.json({ 'gptResponse': data['choices'][0]['message']['content'] });
+  } catch (error) {
+    res.status(500).json({ 'error': error.message });
+  }
+});
 
 
 module.exports = router;
