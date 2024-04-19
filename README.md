@@ -1,9 +1,5 @@
 # University Student Forum Website Project
 
-## Team Members and Roles
-- **Yongheng CUI**: Front-end development and API design.
-- **Xin DONG**: Back-end development.
-
 ## Main Features
 - **Responsive Design**: Utilizing Bootstrap for a minimalist and efficient layout, suitable for various devices.
 - **Advanced Search**: Rich and efficient search capabilities using **lookup** to query comments and post authors.
